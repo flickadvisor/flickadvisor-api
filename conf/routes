@@ -4,6 +4,7 @@
 
 # User Controller
 POST    /users/new                  controllers.UserController.createUser()
+GET     /users/email/:email         controllers.UserController.getUserWithEmail(email: String)
 
 # Movie Controller
 POST    /movies/save                controllers.MovieController.addMovie()

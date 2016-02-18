@@ -12,17 +12,19 @@ import java.util.List;
  */
 @ImplementedBy(UserRepositoryImpl.class)
 public interface UserRepository {
-    void addUser(User user);
+    User addUser(User user);
     void updateUser(User user);
     User getUserWithEmail(String email);
+    User getUser();
 }
 
 @Repository
 class UserRepositoryImpl implements UserRepository {
 
     @Override
-    public void addUser(User user) {
+    public User addUser(User user) {
         JPA.em().persist(user);
+        return user;
     }
 
     @Override
@@ -33,8 +35,17 @@ class UserRepositoryImpl implements UserRepository {
     @Override
     public User getUserWithEmail(String email) {
         List<User> users = (List<User>)JPA.em().createQuery(
-                "select u from users u where u.email = " + email)
+                "select u from users u where u.email = :email")
+                .setParameter("email", email)
                 .getResultList();
         return users.isEmpty() ? null : users.get(0);
+    }
+
+    @Override
+    public User getUser() {
+        List<User> users = (List<User>)JPA.em().createQuery(
+                "select u from users u where u.id = " + 1)
+                .getResultList();
+        return users.get(0);
     }
 }

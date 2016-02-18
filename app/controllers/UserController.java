@@ -3,6 +3,8 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.User;
 import org.mindrot.jbcrypt.BCrypt;
+import play.db.jpa.Transactional;
+import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Http.RequestBody;
@@ -26,6 +28,7 @@ public class UserController extends Controller {
         this.repo = repo;
     }
 
+    @Transactional
     @BodyParser.Of(play.mvc.BodyParser.Json.class)
     public Result createUser() {
         RequestBody body = request().body();
@@ -33,7 +36,6 @@ public class UserController extends Controller {
         if (body == null) {
             return badRequest();
         }
-
         JsonNode json = body.asJson();
 
         String email = json.path("email").asText();
@@ -41,13 +43,22 @@ public class UserController extends Controller {
 
         if (repo.getUserWithEmail(email) != null) {
             return status(CONFLICT);
+        } else {
+            User user = new User(email, hashPassword(password));
+            user = repo.addUser(user);
+            return ok(Json.toJson(user));
         }
+    }
 
-        User user = new User(email, hashPassword(password));
+    @Transactional(readOnly = true)
+    public Result getUserWithEmail(String email) {
+        if (email == null) {
+            return badRequest();
+        } else {
+            User user = repo.getUserWithEmail(email);
 
-        repo.addUser(user);
-
-        return ok();
+            return user == null ? notFound() : ok(Json.toJson(user));
+        }
     }
 
     private String hashPassword(String password) {

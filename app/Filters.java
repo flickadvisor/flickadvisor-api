@@ -1,13 +1,15 @@
 import play.api.mvc.EssentialFilter;
+import play.filters.cors.CORSFilter;
 import play.http.HttpFilters;
 
-/**
- * Created by enda on 17/02/16.
- */
+import javax.inject.Inject;
+
 public class Filters implements HttpFilters {
 
-    @Override
+    @Inject
+    CORSFilter corsFilter;
+
     public EssentialFilter[] filters() {
-        return new EssentialFilter[0];
+        return new EssentialFilter[] { corsFilter };
     }
 }

@@ -13,7 +13,6 @@ libraryDependencies ++= Seq(
   "org.springframework.data" % "spring-data-jpa" % "1.9.2.RELEASE",
   "org.mindrot" % "jbcrypt" % "0.3m"
 
-
 )     
 
 // Play provides two styles of routers, one expects its actions to be injected, the
